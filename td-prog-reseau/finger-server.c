@@ -1,35 +1,94 @@
 #include <stdio.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define PORT 4242
+#define MAX_USER 10
 
-int main (void){
-    printf("Finger server\n");
+struct user{
+    char* firstname;
+    char* lastname;
+};
 
-    int sock = socket(PF_INET, SOCK_STREAM, 0); //IPV4, ???, protocol
-    struct sockaddr_in adress_sock;
-    adress_sock.sin_family = AF_INET; //IPV4
-    adress_sock.sin_port = htons(PORT); //port
-    adress_sock.sin_addr.s_addr = htonl(INADDR_ANY); //anybody
+struct user userList[MAX_USER] = {{"Titi", "Grominet"},{"Oscar", "Oscar"},{"Alice", "Alice"},{"Bob", "Bob"},{"Toto", "Toto"}};
 
-    int bind_status = bind(sock, &adress_sock, sizeof(adress_sock));
-
-    if(bind_status != 0){
-        fprintf(stderr, "Unable to bind, error code: %d\n", bind_status);
-        return EXIT_FAILURE;
-    } else {
-        printf("Server listening on port %d", PORT);
-        struct sockaddr client_addr;
-        int len = sizeof(client_addr);
-        char input[50] = "-1";
-        while(1==1){
-            memset(&client_addr, 0, len);
-            
+char* findUser(char* lastname, int size){
+    for(int i = 0; i < 5; i++){
+        struct user u = userList[i];
+        printf("%s\n", u.lastname);
+        if(strncmp(lastname, u.lastname, size-1) == 0){
+            printf("Find user, %s", u.firstname);
+            return u.firstname;
         }
     }
 
-    
+    return "Unknown";
+}
+
+int main(void)
+{
+    printf("Finger server\n");
+
+    int socket_fd;
+
+    socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (socket_fd == -1)
+    {
+        perror("Unable to create socket\n");
+        return EXIT_FAILURE;
+    }
+    else
+    {
+        printf("Socket created\n");
+    }
+
+    struct sockaddr_in server_addr;
+    bzero(&server_addr, sizeof(server_addr));
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    server_addr.sin_port = htons(PORT);
+
+    int bind_status = bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    if (bind_status != 0)
+    {
+        perror("Bind failed\n");
+        return EXIT_FAILURE;
+    }
+
+    if ((listen(socket_fd, 5)) != 0) // authorise 5 connection simu
+    {
+        perror("Listen failed...\n");
+        return EXIT_FAILURE;
+    }
+
+    struct sockaddr_in client_addr;
+    int len = sizeof(client_addr);
+    printf("Server ready!\n");
+    while (1 == 1)
+    {
+        bzero(&client_addr, sizeof(client_addr));
+        int client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &len);
+
+        char buff[50];
+        int recv_size = recv(client_fd, buff, 50, 0);
+        //read(client_fd, buff, 50);
+        printf("Receive from client (%d char): %s\n",recv_size, buff);
+
+        
+        char* firstname = findUser(buff, recv_size-1);
+
+        write(client_fd, firstname, sizeof(firstname)-2);
+
+        close(client_fd);
+    }
+
+    close(socket_fd);
 
     return EXIT_SUCCESS;
 }
