@@ -22,7 +22,7 @@ char* findUser(char* lastname, int size){
         struct user u = userList[i];
         printf("%s\n", u.lastname);
         if(strncmp(lastname, u.lastname, size-1) == 0){
-            printf("Find user, %s", u.firstname);
+            printf("Find user, %s\n", u.firstname);
             return u.firstname;
         }
     }
@@ -82,8 +82,9 @@ int main(void)
 
         
         char* firstname = findUser(buff, recv_size-1);
+        printf("sizeof(firstname) = %d\n", sizeof(firstname));
 
-        write(client_fd, firstname, sizeof(firstname)-2);
+        write(client_fd, firstname, strlen(firstname));
 
         close(client_fd);
     }
