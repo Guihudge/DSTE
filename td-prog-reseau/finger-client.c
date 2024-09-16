@@ -40,8 +40,6 @@ struct sockaddr * resolveHostname(char *hostame, char* stringIP, int stringSize)
                     0, 0, NI_NUMERICHOST);
 
     return address->ai_addr;
-        
-
 }
 
 int main(int argc, char *argv[])
@@ -78,7 +76,7 @@ int main(int argc, char *argv[])
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
-    server_addr.sin_addr.s_addr = inet_addr(SERVER);
+    server_addr.sin_addr.s_addr = inet_addr(ipStr);
     // connect to the server
     ret = connect(s, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (ret == -1)
