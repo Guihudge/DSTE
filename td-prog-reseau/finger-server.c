@@ -77,8 +77,9 @@ int main(void)
 
         char buff[50];
         int recv_size = recv(client_fd, buff, 50, 0);
-        //read(client_fd, buff, 50);
+        
         printf("Receive from client (%d char): %s\n",recv_size, buff);
+
 
         
         char* firstname = findUser(buff, recv_size-1);

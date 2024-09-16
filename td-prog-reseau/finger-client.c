@@ -14,7 +14,7 @@
 
 void usage(char *program)
 {
-    printf("Usage: %s hostname username [port]\n", program);
+    printf("Usage: %s username hostname [port]\n", program);
     exit(EXIT_FAILURE);
 }
 
@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    char *hostname = argv[1];
-    char *username = argv[2];
+    char *hostname = argv[2];
+    char *username = argv[1];
     char ipStr[20];
     struct sockaddr * server_ip = resolveHostname(hostname,ipStr, 20);
     int port = PORT;
