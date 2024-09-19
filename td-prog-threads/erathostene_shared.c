@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-typedef struct
-{
+typedef struct {
     int filter;
     int *values;
     int value_len;
 } thread_data;
 
-void *thread_filter(void *thdata)
-{
+void *thread_filter(void *thdata) {
     thread_data *data;
     data = (thread_data *)thdata;
     int next_filter = -1;
@@ -18,18 +16,12 @@ void *thread_filter(void *thdata)
     pthread_t child;
     printf("Hi from thread %lu, with filter=%d\n", me, data->filter);
     // Crible
-    for (int i = 0; i < data->value_len; i++)
-    {
-        if (data->values[i] == -1 || data->values[i] <= data->filter)
-        {
+    for (int i = 0; i < data->value_len; i++) {
+        if (data->values[i] == -1 || data->values[i] <= data->filter) {
             continue;
-        }
-        else if (data->values[i] % data->filter == 0)
-        {
+        } else if (data->values[i] % data->filter == 0) {
             data->values[i] = -1;
-        }
-        else if (next_filter == -1)
-        {
+        } else if (next_filter == -1) {
             next_filter = data->values[i];
             thread_data *next_data = malloc(sizeof(thread_data));
             next_data->filter = next_filter;
@@ -38,9 +30,9 @@ void *thread_filter(void *thdata)
 
             pthread_create(&child, NULL, *thread_filter, (void *)next_data);
         }
-    }
-    if (next_filter != -1)
-    {
+    } 
+    
+    if (next_filter != -1) {
         pthread_join(child, NULL);
     }
     free(data);
@@ -48,8 +40,7 @@ void *thread_filter(void *thdata)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     // parse input
     int number;
     int nbvalue = 0;
@@ -70,10 +61,8 @@ int main(void)
     pthread_create(&thread, NULL, *thread_filter, (void *)start_data);
     pthread_join(thread, NULL);
 
-    for (int i = 0; i < nbvalue; i++)
-    {
-        if (values[i] != -1)
-        {
+    for (int i = 0; i < nbvalue; i++) {
+        if (values[i] != -1) {
             printf("%d, ", values[i]);
         }
     }
