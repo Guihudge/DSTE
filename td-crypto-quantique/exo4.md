@@ -6,4 +6,7 @@ Alice(100%) -> Martin(75%) -> Alexis(62.5%) -> Adrian(56.25%) -> Bob(53.125%)
 
 ## b
 Alice(100%) -> Bob(66%)
-Alice(100%) -> Martin(66%) -> Bob(44%)
+Alice(100%) -> Martin(66%) -> Bob(55%)
+
+# Exo 5
+## b
